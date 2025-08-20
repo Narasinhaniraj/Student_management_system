@@ -1,0 +1,128 @@
+MIT license
+
+Copyright (c) 2014-2015 SpryMedia Limited
+http://datatables.net
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+#!/bin/sh
+
+OUT_DIR=$1
+DEBUG=$2
+
+# Change into script's own dir
+cd $(dirname $0)
+
+DT_SRC=$(dirname $(dirname $(pwd)))
+DT_BUILT="${DT_SRC}/built/DataTables"
+. $DT_SRC/build/include.sh
+
+# Copy CSS
+rsync -r css $OUT_DIR
+css_frameworks responsive $OUT_DIR/css
+
+# Copy images
+#rsync -r images $OUT_DIR
+
+# Copy JS
+rsync -r js $OUT_DIR
+js_compress $OUT_DIR/js/dataTables.responsive.js
+js_frameworks responsive $OUT_DIR/js
+
+# Copy and build examples
+rsync -r examples $OUT_DIR
+examples_process $OUT_DIR/examples
+
+# Readme and license
+cp Readme.md $OUT_DIR
+cp License.txt $OUT_DIR
+
+
+# Responsive
+
+Responsive will automatically optimise the table's layout for different screen sizes through the dynamic column visibility control, making your tables useful on desktop and mobile screens.
+
+
+# Installation
+
+To use Responsive the best way to obtain the software is to use the [DataTables downloader](//datatables.net/download). You can also include the individual files from the [DataTables CDN](//cdn.datatables.net). See the [documentation](http://datatables.net/extensions/responsive/) for full details.
+
+
+# Basic usage
+
+Responsive is initialised using the `responsive` option in the DataTables constructor - a simple boolean `true` will enable the feature. Further options can be specified using this option as an object - see the documentation for details.
+
+Example:
+
+```js
+$(document).ready( function () {
+    $('#myTable').DataTable( {
+    	responsive: true
+    } );
+} );
+```
+
+
+# Documentation / support
+
+* [Documentation](https://datatables.net/extensions/responsive/)
+* [DataTables support forums](http://datatables.net/forums)
+
+
+# GitHub
+
+If you fancy getting involved with the development of Responsive and help make it better, please refer to its [GitHub repo](https://github.com/DataTables/Responsive).
+
+
+{
+  "name": "datatables-responsive",
+  "version": "1.0.7",
+  "main": [
+    "js/dataTables.responsive.js",
+    "css/responsive.dataTables.scss"
+  ],
+  "dependencies": {
+    "jquery": ">=1.7.0",
+    "datatables": ">=1.10.1"
+  },
+  "homepage": "https://github.com/DataTables/Responsive",
+  "_release": "1.0.7",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.0.7",
+    "commit": "435b1bd36ed29de73dd704121de0571a5c1a50a6"
+  },
+  "_source": "git://github.com/DataTables/Responsive.git",
+  "_target": "~1.0.3",
+  "_originalSource": "datatables-responsive"
+}
+.sass-cache
+
+{
+	"name": "datatables-responsive",
+	"version": "1.0.7",
+	"main": [
+		"js/dataTables.responsive.js",
+		"css/responsive.dataTables.scss"
+	],
+	"dependencies": {
+		"jquery": ">=1.7.0",
+		"datatables": ">=1.10.1"
+	}
+}
