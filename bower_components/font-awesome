@@ -1,0 +1,135 @@
+{
+  "name": "font-awesome",
+  "description": "Font Awesome",
+  "version": "4.2.0",
+  "keywords": [],
+  "homepage": "http://fontawesome.io",
+  "dependencies": {},
+  "devDependencies": {},
+  "license": [
+    "OFL-1.1",
+    "MIT",
+    "CC-BY-3.0"
+  ],
+  "main": [
+    "./css/font-awesome.css",
+    "./fonts/*"
+  ],
+  "ignore": [
+    "*/.*",
+    "*.json",
+    "src",
+    "*.yml",
+    "Gemfile",
+    "Gemfile.lock",
+    "*.md"
+  ],
+  "_release": "4.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v4.2.0",
+    "commit": "0b924144a95a54fa738d0450ff66c1dabd11ae74"
+  },
+  "_source": "git://github.com/FortAwesome/Font-Awesome.git",
+  "_target": "~4.2.0",
+  "_originalSource": "font-awesome"
+}
+*.pyc
+*.egg-info
+*.db
+*.db.old
+*.swp
+*.db-journal
+
+.coverage
+.DS_Store
+.installed.cfg
+_gh_pages/*
+
+.idea/*
+.svn/*
+src/website/static/*
+src/website/media/*
+
+bin
+cfcache
+develop-eggs
+dist
+downloads
+eggs
+parts
+tmp
+.sass-cache
+node_modules
+
+src/website/settingslocal.py
+stunnel.log
+
+.ruby-version
+
+*.pyc
+*.egg-info
+*.db
+*.db.old
+*.swp
+*.db-journal
+
+.coverage
+.DS_Store
+.installed.cfg
+_gh_pages/*
+
+.idea/*
+.svn/*
+src/website/static/*
+src/website/media/*
+
+bin
+cfcache
+develop-eggs
+dist
+downloads
+eggs
+parts
+tmp
+.sass-cache
+node_modules
+
+src/website/settingslocal.py
+stunnel.log
+
+.ruby-version
+
+# don't need these in the npm package.
+src/
+_config.yml
+bower.json
+component.json
+composer.json
+CONTRIBUTING.md
+Gemfile
+Gemfile.lock
+
+{
+  "name": "font-awesome",
+  "description": "Font Awesome",
+  "version": "4.2.0",
+  "keywords": [],
+  "homepage": "http://fontawesome.io",
+  "dependencies": {},
+  "devDependencies": {},
+  "license": ["OFL-1.1", "MIT", "CC-BY-3.0"],
+  "main": [
+    "./css/font-awesome.css",
+    "./fonts/*"
+  ],
+  "ignore": [
+    "*/.*",
+    "*.json",
+    "src",
+    "*.yml",
+    "Gemfile",
+    "Gemfile.lock",
+    "*.md"
+  ]
+}
