@@ -1,0 +1,168 @@
+Copyright (c) 2008-2015 SpryMedia Limited
+http://datatables.net
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+# DataTables plug-in for jQuery
+
+DataTables is a table enhancing plug-in for the [jQuery](//jquery.com) Javascript library, adding sorting, paging and filtering abilities to plain HTML tables with minimal effort. The stated goal of DataTables is:
+
+> To enhance the accessibility of data in HTML tables.
+
+To meet this goal, DataTables is developed with two distinct groups of users in mind:
+
+* You the developers using DataTables. For developers DataTables provides a wide array of options for how data should be obtained, displayed and acted upon, along with an extensive API for accessing and manipulating the table.
+
+* End users. For those using the interface DataTables presents, actions to get the most from the information contained in tables, such as sorting and filtering, along with paging and scrolling of the data in table, are easy to use, intuitive and fast.
+
+
+## Installation
+
+In most cases, to use DataTables all you need to do is include jQuery, the DataTables Javascript and DataTables CSS files in your HTML page. See the [DataTables manual](http://datatables.net/manual/installation#Including-Javascript-/-CSS) for details on how to do this using the latest version of DataTables.
+
+
+## Usage
+
+In its simplest case, DataTables can be initialised with a single line of Javascript:
+
+```js
+$('table').dataTable();
+```
+
+where the jQuery selector is used to obtain a reference to the table you want to enhance with DataTables. Optional configuration parameters can be passed in to DataTables to have it perform certain actions by using a configuration object as the parameter passed in to the DataTables constructor. For example:
+
+```js
+$('table').dataTable( {
+  paginate: false,
+  scrollY: 300
+} );
+```
+
+will disable paging and enable scrolling.
+
+A full list of the options available for DataTables are available in the [documentation](//datatables.net).
+
+
+## Documentation
+
+Full documentation of the DataTables options, API and pug-in interface are available on the [DataTables web-site](//datatables.net). The site also contains information on the wide variety of plug-ins that are available for DataTables, which can be used to enhance and customise your table even further.
+
+
+## Support
+
+Support for DataTables is available through the [DataTables forums](//datatables.net/forums) and [commercial support options](//datatables.net/support) are available.
+
+
+## License
+
+DataTables is release under the [MIT license](//datatables.net/license). You are free to use, modify and distribute this software, as long as the copyright header is left intact (specifically the comment block which starts with `/*!`.
+
+{
+  "name": "datatables",
+  "version": "1.10.10",
+  "main": [
+    "media/js/jquery.dataTables.js",
+    "media/css/jquery.dataTables.css",
+    "media/images/sort_asc.png",
+    "media/images/sort_asc_disabled.png",
+    "media/images/sort_both.png",
+    "media/images/sort_desc.png",
+    "media/images/sort_desc_disabled.png"
+  ],
+  "dependencies": {
+    "jquery": ">=1.7.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jquery",
+    "datatables",
+    "table",
+    "javascript",
+    "library"
+  ],
+  "ignore": [
+    "/.*",
+    "examples",
+    "media/unit_testing",
+    "composer.json",
+    "dataTables.jquery.json",
+    "package.json"
+  ],
+  "homepage": "https://github.com/DataTables/DataTables",
+  "_release": "1.10.10",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.10.10",
+    "commit": "74fd9c1901fb2b494f8395959a708e6eb8978bbd"
+  },
+  "_source": "git://github.com/DataTables/DataTables.git",
+  "_target": "~1.10.4",
+  "_originalSource": "datatables"
+}
+{
+	"name": "datatables",
+	"version": "1.10.10",
+	"main": [
+		"media/js/jquery.dataTables.js",
+		"media/css/jquery.dataTables.css",
+		"media/images/sort_asc.png",
+		"media/images/sort_asc_disabled.png",
+		"media/images/sort_both.png",
+		"media/images/sort_desc.png",
+		"media/images/sort_desc_disabled.png"
+	],
+	"dependencies": {
+		"jquery": ">=1.7.0"
+	},
+	"license": "MIT",
+	"keywords": [
+		"jquery",
+		"datatables",
+		"table",
+		"javascript",
+		"library"
+	],
+	"ignore": [
+		"/.*",
+		"examples",
+		"media/unit_testing",
+		"composer.json",
+		"dataTables.jquery.json",
+		"package.json"
+	]
+}
+
+# Support requests
+
+Please direct support requests to the [DataTables forums](https://datatables.net/forums), ensuring that you provide a link to a test page that shows the problem and a full description of the issue. If you require urgent help, [priority support](https://datatables.net/support) is available.
+
+
+# Contributing code
+
+If you are thinking of contributing code to DataTables, first of all, thank you! All fixes, patches and enhancements to DataTables are very warmly welcomed. In order to keep thing manageable, there are a number of guidelines that should be followed in order to ensure that your modification is included in DataTables as quickly as possible:
+
+1. Make contributions in the DataTables/DataTablesSrc repo. Changes to the built files in the built repo (DataTables/DataTables) will not be accepted since they would be overwritten by the next build!
+
+2. Follow the style of the code in the existing files. They might not be to everyone's tastes, but consistency is key for a mature project like DataTables. DataTables doesn't have a coding standards document, but simple common sense of following the same style as in the existing files is ideal. For example use tabs not spaces (as you will see all source files use tabs).
+
+3. Link to a test page showing the bug you are fixing or the feature you are adding. This allows to me to quickly identify what is being changed and why. Don't worry about being verbose in pull requests - its much better to know exactly what is changing and why!
+
+4. DataTables is a large and complex project and it isn't always possible or suitable to pull in every suggested change. Please don't be offended if a pull request is not merged in, it will explained why not if this is the case. Also it isn't always possible to fully check and test pull requests as quickly as I would like due to other commitments. Again this is no reflection on your pull request, just the busy life that we all lead! If you have any questions about your potential contribution and its place in the DataTables project structure, please ask ahead of time in the [DataTables forums](//datatables.net/forums).
+
+5. Pull requests will only be accepted if you acknowledge that your contribution is offered under and will be made available under the project's existing license (MIT). If your initial pull request doesn't explicitly acknowledge this I'll ask before it is pulled in.
