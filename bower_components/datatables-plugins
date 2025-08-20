@@ -1,0 +1,63 @@
+{
+  "name": "datatables-plugins",
+  "homepage": "https://github.com/DataTables/Plugins",
+  "version": "1.0.1",
+  "_release": "1.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.0.1",
+    "commit": "a94e328df63c79af43123b99ada5ff88d601a31d"
+  },
+  "_source": "git://github.com/DataTables/Plugins.git",
+  "_target": "~1.0.1",
+  "_originalSource": "datatables-plugins",
+  "_direct": true
+}
+#!/bin/sh
+
+OUT_DIR=$1
+DEBUG=$2
+
+# Change into script's own dir
+cd $(dirname $0)
+
+DT_SRC=$(dirname $(dirname $(pwd)))
+DT_BUILT="${DT_SRC}/built/DataTables"
+. $DT_SRC/build/include.sh
+
+scss_compile $DT_SRC/extensions/Plugins/integration/jqueryui/dataTables.jqueryui.scss
+
+js_compress $DT_SRC/extensions/Plugins/features/searchHighlight/dataTables.searchHighlight.js
+js_compress $DT_SRC/extensions/Plugins/features/alphabetSearch/dataTables.alphabetSearch.js
+js_compress $DT_SRC/extensions/Plugins/features/lengthLinks/dataTables.lengthLinks.js
+
+js_compress $DT_SRC/extensions/Plugins/integration/bootstrap/2/dataTables.bootstrap.js
+js_compress $DT_SRC/extensions/Plugins/integration/bootstrap/3/dataTables.bootstrap.js
+js_compress $DT_SRC/extensions/Plugins/integration/foundation/dataTables.foundation.js
+js_compress $DT_SRC/extensions/Plugins/integration/jqueryui/dataTables.jqueryui.js
+
+# Only copying the integration files
+rsync -r integration     $OUT_DIR
+
+
+DataTables Plugins
+==================
+
+This repository contains a collection of plug-ins for the jQuery [DataTables](http://datatables.net) table enhancer. These plug-ins are feature enhancing for the DataTables library, adding extra options to core functionality such as additional sort algorithms, API methods and pagination controls. The plug-ins should not be confused with DataTables "extras" which are more significant software libraries which add additional features to DataTables.
+
+This repository holds the following plug-in types for DataTables:
+
+* Sorting
+  * Type based
+  * Custom data source based
+* API 
+* Filtering
+  * Type based
+  * Row based
+* Internationalisation translations
+* Type detection
+* Pagination
+* Integration scripts
+  * Twitter Bootstrap
+
+Each directory has an index.html file which is used to generate the plug-ins documentation on [DataTables.net](http://datatables.net/plug-ins) and describes how plug-ins can be used.
