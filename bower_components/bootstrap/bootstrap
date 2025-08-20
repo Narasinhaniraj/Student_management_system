@@ -1,0 +1,901 @@
+{
+  "name": "bootstrap",
+  "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+  "keywords": [
+    "css",
+    "js",
+    "less",
+    "mobile-first",
+    "responsive",
+    "front-end",
+    "framework",
+    "web"
+  ],
+  "homepage": "http://getbootstrap.com",
+  "license": "MIT",
+  "moduleType": "globals",
+  "main": [
+    "less/bootstrap.less",
+    "dist/js/bootstrap.js"
+  ],
+  "ignore": [
+    "/.*",
+    "_config.yml",
+    "CNAME",
+    "composer.json",
+    "CONTRIBUTING.md",
+    "docs",
+    "js/tests",
+    "test-infra"
+  ],
+  "dependencies": {
+    "jquery": "1.9.1 - 2"
+  },
+  "version": "3.3.6",
+  "_release": "3.3.6",
+  "_resolution": {
+    "type": "version",
+    "tag": "v3.3.6",
+    "commit": "81df608a40bf0629a1dc08e584849bb1e43e0b7a"
+  },
+  "_source": "git://github.com/twbs/bootstrap.git",
+  "_target": "~3.3.6",
+  "_originalSource": "bootstrap"
+}
+{
+  "name": "bootstrap",
+  "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+  "keywords": [
+    "css",
+    "js",
+    "less",
+    "mobile-first",
+    "responsive",
+    "front-end",
+    "framework",
+    "web"
+  ],
+  "homepage": "http://getbootstrap.com",
+  "license": "MIT",
+  "moduleType": "globals",
+  "main": [
+    "less/bootstrap.less",
+    "dist/js/bootstrap.js"
+  ],
+  "ignore": [
+    "/.*",
+    "_config.yml",
+    "CNAME",
+    "composer.json",
+    "CONTRIBUTING.md",
+    "docs",
+    "js/tests",
+    "test-infra"
+  ],
+  "dependencies": {
+    "jquery": "1.9.1 - 2"
+  }
+}
+
+Bootstrap uses [GitHub's Releases feature](https://github.com/blog/1547-release-your-software) for its changelogs.
+
+See [the Releases section of our GitHub project](https://github.com/twbs/bootstrap/releases) for changelogs for each release version of Bootstrap.
+
+Release announcement posts on [the official Bootstrap blog](http://blog.getbootstrap.com) contain summaries of the most noteworthy changes made in each release.
+
+/*!
+ * Bootstrap's Gruntfile
+ * http://getbootstrap.com
+ * Copyright 2013-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+module.exports = function (grunt) {
+  'use strict';
+
+  // Force use of Unix newlines
+  grunt.util.linefeed = '\n';
+
+  RegExp.quote = function (string) {
+    return string.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
+  };
+
+  var fs = require('fs');
+  var path = require('path');
+  var npmShrinkwrap = require('npm-shrinkwrap');
+  var generateGlyphiconsData = require('./grunt/bs-glyphicons-data-generator.js');
+  var BsLessdocParser = require('./grunt/bs-lessdoc-parser.js');
+  var getLessVarsData = function () {
+    var filePath = path.join(__dirname, 'less/variables.less');
+    var fileContent = fs.readFileSync(filePath, { encoding: 'utf8' });
+    var parser = new BsLessdocParser(fileContent);
+    return { sections: parser.parseFile() };
+  };
+  var generateRawFiles = require('./grunt/bs-raw-files-generator.js');
+  var generateCommonJSModule = require('./grunt/bs-commonjs-generator.js');
+  var configBridge = grunt.file.readJSON('./grunt/configBridge.json', { encoding: 'utf8' });
+
+  Object.keys(configBridge.paths).forEach(function (key) {
+    configBridge.paths[key].forEach(function (val, i, arr) {
+      arr[i] = path.join('./docs/assets', val);
+    });
+  });
+
+  // Project configuration.
+  grunt.initConfig({
+
+    // Metadata.
+    pkg: grunt.file.readJSON('package.json'),
+    banner: '/*!\n' +
+            ' * Bootstrap v<%= pkg.version %> (<%= pkg.homepage %>)\n' +
+            ' * Copyright 2011-<%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
+            ' * Licensed under the <%= pkg.license %> license\n' +
+            ' */\n',
+    jqueryCheck: configBridge.config.jqueryCheck.join('\n'),
+    jqueryVersionCheck: configBridge.config.jqueryVersionCheck.join('\n'),
+
+    // Task configuration.
+    clean: {
+      dist: 'dist',
+      docs: 'docs/dist'
+    },
+
+    jshint: {
+      options: {
+        jshintrc: 'js/.jshintrc'
+      },
+      grunt: {
+        options: {
+          jshintrc: 'grunt/.jshintrc'
+        },
+        src: ['Gruntfile.js', 'package.js', 'grunt/*.js']
+      },
+      core: {
+        src: 'js/*.js'
+      },
+      test: {
+        options: {
+          jshintrc: 'js/tests/unit/.jshintrc'
+        },
+        src: 'js/tests/unit/*.js'
+      },
+      assets: {
+        src: ['docs/assets/js/src/*.js', 'docs/assets/js/*.js', '!docs/assets/js/*.min.js']
+      }
+    },
+
+    jscs: {
+      options: {
+        config: 'js/.jscsrc'
+      },
+      grunt: {
+        src: '<%= jshint.grunt.src %>'
+      },
+      core: {
+        src: '<%= jshint.core.src %>'
+      },
+      test: {
+        src: '<%= jshint.test.src %>'
+      },
+      assets: {
+        options: {
+          requireCamelCaseOrUpperCaseIdentifiers: null
+        },
+        src: '<%= jshint.assets.src %>'
+      }
+    },
+
+    concat: {
+      options: {
+        banner: '<%= banner %>\n<%= jqueryCheck %>\n<%= jqueryVersionCheck %>',
+        stripBanners: false
+      },
+      bootstrap: {
+        src: [
+          'js/transition.js',
+          'js/alert.js',
+          'js/button.js',
+          'js/carousel.js',
+          'js/collapse.js',
+          'js/dropdown.js',
+          'js/modal.js',
+          'js/tooltip.js',
+          'js/popover.js',
+          'js/scrollspy.js',
+          'js/tab.js',
+          'js/affix.js'
+        ],
+        dest: 'dist/js/<%= pkg.name %>.js'
+      }
+    },
+
+    uglify: {
+      options: {
+        compress: {
+          warnings: false
+        },
+        mangle: true,
+        preserveComments: 'some'
+      },
+      core: {
+        src: '<%= concat.bootstrap.dest %>',
+        dest: 'dist/js/<%= pkg.name %>.min.js'
+      },
+      customize: {
+        src: configBridge.paths.customizerJs,
+        dest: 'docs/assets/js/customize.min.js'
+      },
+      docsJs: {
+        src: configBridge.paths.docsJs,
+        dest: 'docs/assets/js/docs.min.js'
+      }
+    },
+
+    qunit: {
+      options: {
+        inject: 'js/tests/unit/phantom.js'
+      },
+      files: 'js/tests/index.html'
+    },
+
+    less: {
+      compileCore: {
+        options: {
+          strictMath: true,
+          sourceMap: true,
+          outputSourceFiles: true,
+          sourceMapURL: '<%= pkg.name %>.css.map',
+          sourceMapFilename: 'dist/css/<%= pkg.name %>.css.map'
+        },
+        src: 'less/bootstrap.less',
+        dest: 'dist/css/<%= pkg.name %>.css'
+      },
+      compileTheme: {
+        options: {
+          strictMath: true,
+          sourceMap: true,
+          outputSourceFiles: true,
+          sourceMapURL: '<%= pkg.name %>-theme.css.map',
+          sourceMapFilename: 'dist/css/<%= pkg.name %>-theme.css.map'
+        },
+        src: 'less/theme.less',
+        dest: 'dist/css/<%= pkg.name %>-theme.css'
+      }
+    },
+
+    autoprefixer: {
+      options: {
+        browsers: configBridge.config.autoprefixerBrowsers
+      },
+      core: {
+        options: {
+          map: true
+        },
+        src: 'dist/css/<%= pkg.name %>.css'
+      },
+      theme: {
+        options: {
+          map: true
+        },
+        src: 'dist/css/<%= pkg.name %>-theme.css'
+      },
+      docs: {
+        src: ['docs/assets/css/src/docs.css']
+      },
+      examples: {
+        expand: true,
+        cwd: 'docs/examples/',
+        src: ['**/*.css'],
+        dest: 'docs/examples/'
+      }
+    },
+
+    csslint: {
+      options: {
+        csslintrc: 'less/.csslintrc'
+      },
+      dist: [
+        'dist/css/bootstrap.css',
+        'dist/css/bootstrap-theme.css'
+      ],
+      examples: [
+        'docs/examples/**/*.css'
+      ],
+      docs: {
+        options: {
+          ids: false,
+          'overqualified-elements': false
+        },
+        src: 'docs/assets/css/src/docs.css'
+      }
+    },
+
+    cssmin: {
+      options: {
+        // TODO: disable `zeroUnits` optimization once clean-css 3.2 is released
+        //    and then simplify the fix for https://github.com/twbs/bootstrap/issues/14837 accordingly
+        compatibility: 'ie8',
+        keepSpecialComments: '*',
+        sourceMap: true,
+        advanced: false
+      },
+      minifyCore: {
+        src: 'dist/css/<%= pkg.name %>.css',
+        dest: 'dist/css/<%= pkg.name %>.min.css'
+      },
+      minifyTheme: {
+        src: 'dist/css/<%= pkg.name %>-theme.css',
+        dest: 'dist/css/<%= pkg.name %>-theme.min.css'
+      },
+      docs: {
+        src: [
+          'docs/assets/css/ie10-viewport-bug-workaround.css',
+          'docs/assets/css/src/pygments-manni.css',
+          'docs/assets/css/src/docs.css'
+        ],
+        dest: 'docs/assets/css/docs.min.css'
+      }
+    },
+
+    csscomb: {
+      options: {
+        config: 'less/.csscomb.json'
+      },
+      dist: {
+        expand: true,
+        cwd: 'dist/css/',
+        src: ['*.css', '!*.min.css'],
+        dest: 'dist/css/'
+      },
+      examples: {
+        expand: true,
+        cwd: 'docs/examples/',
+        src: '**/*.css',
+        dest: 'docs/examples/'
+      },
+      docs: {
+        src: 'docs/assets/css/src/docs.css',
+        dest: 'docs/assets/css/src/docs.css'
+      }
+    },
+
+    copy: {
+      fonts: {
+        expand: true,
+        src: 'fonts/*',
+        dest: 'dist/'
+      },
+      docs: {
+        expand: true,
+        cwd: 'dist/',
+        src: [
+          '**/*'
+        ],
+        dest: 'docs/dist/'
+      }
+    },
+
+    connect: {
+      server: {
+        options: {
+          port: 3000,
+          base: '.'
+        }
+      }
+    },
+
+    jekyll: {
+      options: {
+        config: '_config.yml'
+      },
+      docs: {},
+      github: {
+        options: {
+          raw: 'github: true'
+        }
+      }
+    },
+
+    htmlmin: {
+      dist: {
+        options: {
+          collapseWhitespace: true,
+          conservativeCollapse: true,
+          minifyCSS: true,
+          minifyJS: true,
+          removeAttributeQuotes: true,
+          removeComments: true
+        },
+        expand: true,
+        cwd: '_gh_pages',
+        dest: '_gh_pages',
+        src: [
+          '**/*.html',
+          '!examples/**/*.html'
+        ]
+      }
+    },
+
+    jade: {
+      options: {
+        pretty: true,
+        data: getLessVarsData
+      },
+      customizerVars: {
+        src: 'docs/_jade/customizer-variables.jade',
+        dest: 'docs/_includes/customizer-variables.html'
+      },
+      customizerNav: {
+        src: 'docs/_jade/customizer-nav.jade',
+        dest: 'docs/_includes/nav/customize.html'
+      }
+    },
+
+    htmllint: {
+      options: {
+        ignore: [
+          'Attribute "autocomplete" not allowed on element "button" at this point.',
+          'Attribute "autocomplete" is only allowed when the input type is "color", "date", "datetime", "datetime-local", "email", "month", "number", "password", "range", "search", "tel", "text", "time", "url", or "week".',
+          'Element "img" is missing required attribute "src".'
+        ]
+      },
+      src: '_gh_pages/**/*.html'
+    },
+
+    watch: {
+      src: {
+        files: '<%= jshint.core.src %>',
+        tasks: ['jshint:core', 'qunit', 'concat']
+      },
+      test: {
+        files: '<%= jshint.test.src %>',
+        tasks: ['jshint:test', 'qunit']
+      },
+      less: {
+        files: 'less/**/*.less',
+        tasks: 'less'
+      }
+    },
+
+    sed: {
+      versionNumber: {
+        pattern: (function () {
+          var old = grunt.option('oldver');
+          return old ? RegExp.quote(old) : old;
+        })(),
+        replacement: grunt.option('newver'),
+        exclude: [
+          'dist/fonts',
+          'docs/assets',
+          'fonts',
+          'js/tests/vendor',
+          'node_modules',
+          'test-infra'
+        ],
+        recursive: true
+      }
+    },
+
+    'saucelabs-qunit': {
+      all: {
+        options: {
+          build: process.env.TRAVIS_JOB_ID,
+          throttled: 10,
+          maxRetries: 3,
+          maxPollRetries: 4,
+          urls: ['http://127.0.0.1:3000/js/tests/index.html?hidepassed'],
+          browsers: grunt.file.readYAML('grunt/sauce_browsers.yml')
+        }
+      }
+    },
+
+    exec: {
+      npmUpdate: {
+        command: 'npm update'
+      }
+    },
+
+    compress: {
+      main: {
+        options: {
+          archive: 'bootstrap-<%= pkg.version %>-dist.zip',
+          mode: 'zip',
+          level: 9,
+          pretty: true
+        },
+        files: [
+          {
+            expand: true,
+            cwd: 'dist/',
+            src: ['**'],
+            dest: 'bootstrap-<%= pkg.version %>-dist'
+          }
+        ]
+      }
+    }
+
+  });
+
+
+  // These plugins provide necessary tasks.
+  require('load-grunt-tasks')(grunt, { scope: 'devDependencies' });
+  require('time-grunt')(grunt);
+
+  // Docs HTML validation task
+  grunt.registerTask('validate-html', ['jekyll:docs', 'htmllint']);
+
+  var runSubset = function (subset) {
+    return !process.env.TWBS_TEST || process.env.TWBS_TEST === subset;
+  };
+  var isUndefOrNonZero = function (val) {
+    return val === undefined || val !== '0';
+  };
+
+  // Test task.
+  var testSubtasks = [];
+  // Skip core tests if running a different subset of the test suite
+  if (runSubset('core') &&
+      // Skip core tests if this is a Savage build
+      process.env.TRAVIS_REPO_SLUG !== 'twbs-savage/bootstrap') {
+    testSubtasks = testSubtasks.concat(['dist-css', 'dist-js', 'csslint:dist', 'test-js', 'docs']);
+  }
+  // Skip HTML validation if running a different subset of the test suite
+  if (runSubset('validate-html') &&
+      // Skip HTML5 validator on Travis when [skip validator] is in the commit message
+      isUndefOrNonZero(process.env.TWBS_DO_VALIDATOR)) {
+    testSubtasks.push('validate-html');
+  }
+  // Only run Sauce Labs tests if there's a Sauce access key
+  if (typeof process.env.SAUCE_ACCESS_KEY !== 'undefined' &&
+      // Skip Sauce if running a different subset of the test suite
+      runSubset('sauce-js-unit') &&
+      // Skip Sauce on Travis when [skip sauce] is in the commit message
+      isUndefOrNonZero(process.env.TWBS_DO_SAUCE)) {
+    testSubtasks.push('connect');
+    testSubtasks.push('saucelabs-qunit');
+  }
+  grunt.registerTask('test', testSubtasks);
+  grunt.registerTask('test-js', ['jshint:core', 'jshint:test', 'jshint:grunt', 'jscs:core', 'jscs:test', 'jscs:grunt', 'qunit']);
+
+  // JS distribution task.
+  grunt.registerTask('dist-js', ['concat', 'uglify:core', 'commonjs']);
+
+  // CSS distribution task.
+  grunt.registerTask('less-compile', ['less:compileCore', 'less:compileTheme']);
+  grunt.registerTask('dist-css', ['less-compile', 'autoprefixer:core', 'autoprefixer:theme', 'csscomb:dist', 'cssmin:minifyCore', 'cssmin:minifyTheme']);
+
+  // Full distribution task.
+  grunt.registerTask('dist', ['clean:dist', 'dist-css', 'copy:fonts', 'dist-js']);
+
+  // Default task.
+  grunt.registerTask('default', ['clean:dist', 'copy:fonts', 'test']);
+
+  // Version numbering task.
+  // grunt change-version-number --oldver=A.B.C --newver=X.Y.Z
+  // This can be overzealous, so its changes should always be manually reviewed!
+  grunt.registerTask('change-version-number', 'sed');
+
+  grunt.registerTask('build-glyphicons-data', function () { generateGlyphiconsData.call(this, grunt); });
+
+  // task for building customizer
+  grunt.registerTask('build-customizer', ['build-customizer-html', 'build-raw-files']);
+  grunt.registerTask('build-customizer-html', 'jade');
+  grunt.registerTask('build-raw-files', 'Add scripts/less files to customizer.', function () {
+    var banner = grunt.template.process('<%= banner %>');
+    generateRawFiles(grunt, banner);
+  });
+
+  grunt.registerTask('commonjs', 'Generate CommonJS entrypoint module in dist dir.', function () {
+    var srcFiles = grunt.config.get('concat.bootstrap.src');
+    var destFilepath = 'dist/js/npm.js';
+    generateCommonJSModule(grunt, srcFiles, destFilepath);
+  });
+
+  // Docs task.
+  grunt.registerTask('docs-css', ['autoprefixer:docs', 'autoprefixer:examples', 'csscomb:docs', 'csscomb:examples', 'cssmin:docs']);
+  grunt.registerTask('lint-docs-css', ['csslint:docs', 'csslint:examples']);
+  grunt.registerTask('docs-js', ['uglify:docsJs', 'uglify:customize']);
+  grunt.registerTask('lint-docs-js', ['jshint:assets', 'jscs:assets']);
+  grunt.registerTask('docs', ['docs-css', 'lint-docs-css', 'docs-js', 'lint-docs-js', 'clean:docs', 'copy:docs', 'build-glyphicons-data', 'build-customizer']);
+
+  grunt.registerTask('prep-release', ['dist', 'docs', 'jekyll:github', 'htmlmin', 'compress']);
+
+  // Task for updating the cached npm packages used by the Travis build (which are controlled by test-infra/npm-shrinkwrap.json).
+  // This task should be run and the updated file should be committed whenever Bootstrap's dependencies change.
+  grunt.registerTask('update-shrinkwrap', ['exec:npmUpdate', '_update-shrinkwrap']);
+  grunt.registerTask('_update-shrinkwrap', function () {
+    var done = this.async();
+    npmShrinkwrap({ dev: true, dirname: __dirname }, function (err) {
+      if (err) {
+        grunt.fail.warn(err);
+      }
+      var dest = 'test-infra/npm-shrinkwrap.json';
+      fs.renameSync('npm-shrinkwrap.json', dest);
+      grunt.log.writeln('File ' + dest.cyan + ' updated.');
+      done();
+    });
+  });
+};
+
+The MIT License (MIT)
+
+Copyright (c) 2011-2015 Twitter, Inc
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+// package metadata file for Meteor.js
+
+/* jshint strict:false */
+/* global Package:true */
+
+Package.describe({
+  name: 'twbs:bootstrap',  // http://atmospherejs.com/twbs/bootstrap
+  summary: 'The most popular front-end framework for developing responsive, mobile first projects on the web.',
+  version: '3.3.6',
+  git: 'https://github.com/twbs/bootstrap.git'
+});
+
+Package.onUse(function (api) {
+  api.versionsFrom('METEOR@1.0');
+  api.use('jquery', 'client');
+  var assets = [
+    'dist/fonts/glyphicons-halflings-regular.eot',
+    'dist/fonts/glyphicons-halflings-regular.svg',
+    'dist/fonts/glyphicons-halflings-regular.ttf',
+    'dist/fonts/glyphicons-halflings-regular.woff',
+    'dist/fonts/glyphicons-halflings-regular.woff2'
+  ];
+  if (api.addAssets) {
+    api.addAssets(assets, 'client');
+  } else {
+    api.addFiles(assets, 'client', { isAsset: true });
+  }
+  api.addFiles([
+    'dist/css/bootstrap.css',
+    'dist/js/bootstrap.js'
+  ], 'client');
+});
+
+{
+  "name": "bootstrap",
+  "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+  "version": "3.3.6",
+  "keywords": [
+    "css",
+    "less",
+    "mobile-first",
+    "responsive",
+    "front-end",
+    "framework",
+    "web"
+  ],
+  "homepage": "http://getbootstrap.com",
+  "author": "Twitter, Inc.",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "style": "dist/css/bootstrap.css",
+  "less": "less/bootstrap.less",
+  "main": "./dist/js/npm",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twbs/bootstrap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/twbs/bootstrap/issues"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "btoa": "~1.1.2",
+    "glob": "~6.0.1",
+    "grunt": "~0.4.5",
+    "grunt-autoprefixer": "~3.0.3",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-contrib-compress": "~0.14.0",
+    "grunt-contrib-concat": "~0.5.1",
+    "grunt-contrib-connect": "~0.11.2",
+    "grunt-contrib-copy": "~0.8.0",
+    "grunt-contrib-csslint": "~0.5.0",
+    "grunt-contrib-cssmin": "~0.14.0",
+    "grunt-contrib-htmlmin": "~0.6.0",
+    "grunt-contrib-jade": "~0.15.0",
+    "grunt-contrib-jshint": "~0.11.2",
+    "grunt-contrib-less": "~1.1.0",
+    "grunt-contrib-qunit": "~0.7.0",
+    "grunt-contrib-uglify": "~0.9.2",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-csscomb": "~3.1.0",
+    "grunt-exec": "~0.4.6",
+    "grunt-html": "~5.0.1",
+    "grunt-jekyll": "~0.4.2",
+    "grunt-jscs": "~2.3.0",
+    "grunt-saucelabs": "~8.6.1",
+    "grunt-sed": "twbs/grunt-sed#v0.2.0",
+    "load-grunt-tasks": "~3.3.0",
+    "markdown-it": "^5.0.0",
+    "npm-shrinkwrap": "^200.4.0",
+    "time-grunt": "^1.2.1"
+  },
+  "engines": {
+    "node": ">=0.10.1"
+  },
+  "files": [
+    "dist",
+    "fonts",
+    "grunt",
+    "js/*.js",
+    "less/**/*.less",
+    "Gruntfile.js",
+    "LICENSE"
+  ],
+  "jspm": {
+    "main": "js/bootstrap",
+    "shim": {
+      "js/bootstrap": {
+        "deps": "jquery",
+        "exports": "$"
+      }
+    },
+    "files": [
+      "css",
+      "fonts",
+      "js"
+    ]
+  }
+}
+
+# [Bootstrap](http://getbootstrap.com)
+
+[![Slack](https://bootstrap-slack.herokuapp.com/badge.svg)](https://bootstrap-slack.herokuapp.com)
+![Bower version](https://img.shields.io/bower/v/bootstrap.svg)
+[![npm version](https://img.shields.io/npm/v/bootstrap.svg)](https://www.npmjs.com/package/bootstrap)
+[![Build Status](https://img.shields.io/travis/twbs/bootstrap/master.svg)](https://travis-ci.org/twbs/bootstrap)
+[![devDependency Status](https://img.shields.io/david/dev/twbs/bootstrap.svg)](https://david-dm.org/twbs/bootstrap#info=devDependencies)
+[![NuGet](https://img.shields.io/nuget/v/bootstrap.svg)](https://www.nuget.org/packages/Bootstrap)
+[![Selenium Test Status](https://saucelabs.com/browser-matrix/bootstrap.svg)](https://saucelabs.com/u/bootstrap)
+
+Bootstrap is a sleek, intuitive, and powerful front-end framework for faster and easier web development, created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thornton](https://twitter.com/fat), and maintained by the [core team](https://github.com/orgs/twbs/people) with the massive support and involvement of the community.
+
+To get started, check out <http://getbootstrap.com>!
+
+
+## Table of contents
+
+* [Quick start](#quick-start)
+* [Bugs and feature requests](#bugs-and-feature-requests)
+* [Documentation](#documentation)
+* [Contributing](#contributing)
+* [Community](#community)
+* [Versioning](#versioning)
+* [Creators](#creators)
+* [Copyright and license](#copyright-and-license)
+
+
+## Quick start
+
+Several quick start options are available:
+
+* [Download the latest release](https://github.com/twbs/bootstrap/archive/v3.3.6.zip).
+* Clone the repo: `git clone https://github.com/twbs/bootstrap.git`.
+* Install with [Bower](http://bower.io): `bower install bootstrap`.
+* Install with [npm](https://www.npmjs.com): `npm install bootstrap`.
+* Install with [Meteor](https://www.meteor.com): `meteor add twbs:bootstrap`.
+* Install with [Composer](https://getcomposer.org): `composer require twbs/bootstrap`.
+
+Read the [Getting started page](http://getbootstrap.com/getting-started/) for information on the framework contents, templates and examples, and more.
+
+### What's included
+
+Within the download you'll find the following directories and files, logically grouping common assets and providing both compiled and minified variations. You'll see something like this:
+
+```
+bootstrap/
+├── css/
+│   ├── bootstrap.css
+│   ├── bootstrap.css.map
+│   ├── bootstrap.min.css
+│   ├── bootstrap.min.css.map
+│   ├── bootstrap-theme.css
+│   ├── bootstrap-theme.css.map
+│   ├── bootstrap-theme.min.css
+│   └── bootstrap-theme.min.css.map
+├── js/
+│   ├── bootstrap.js
+│   └── bootstrap.min.js
+└── fonts/
+    ├── glyphicons-halflings-regular.eot
+    ├── glyphicons-halflings-regular.svg
+    ├── glyphicons-halflings-regular.ttf
+    ├── glyphicons-halflings-regular.woff
+    └── glyphicons-halflings-regular.woff2
+```
+
+We provide compiled CSS and JS (`bootstrap.*`), as well as compiled and minified CSS and JS (`bootstrap.min.*`). CSS [source maps](https://developer.chrome.com/devtools/docs/css-preprocessors) (`bootstrap.*.map`) are available for use with certain browsers' developer tools. Fonts from Glyphicons are included, as is the optional Bootstrap theme.
+
+
+## Bugs and feature requests
+
+Have a bug or a feature request? Please first read the [issue guidelines](https://github.com/twbs/bootstrap/blob/master/CONTRIBUTING.md#using-the-issue-tracker) and search for existing and closed issues. If your problem or idea is not addressed yet, [please open a new issue](https://github.com/twbs/bootstrap/issues/new).
+
+
+## Documentation
+
+Bootstrap's documentation, included in this repo in the root directory, is built with [Jekyll](http://jekyllrb.com) and publicly hosted on GitHub Pages at <http://getbootstrap.com>. The docs may also be run locally.
+
+### Running documentation locally
+
+1. If necessary, [install Jekyll](http://jekyllrb.com/docs/installation) (requires v3.0.x).
+   **Note for Windows users:** Read [this unofficial guide](http://jekyll-windows.juthilo.com/) to get Jekyll up and running without problems.
+2. Install the Ruby-based syntax highlighter, [Rouge](https://github.com/jneen/rouge), with `gem install rouge`.
+3. From the root `/bootstrap` directory, run `jekyll serve` in the command line.
+4. Open `http://localhost:9001` in your browser, and voilà.
+
+Learn more about using Jekyll by reading its [documentation](http://jekyllrb.com/docs/home/).
+
+### Documentation for previous releases
+
+Documentation for v2.3.2 has been made available for the time being at <http://getbootstrap.com/2.3.2/> while folks transition to Bootstrap 3.
+
+[Previous releases](https://github.com/twbs/bootstrap/releases) and their documentation are also available for download.
+
+
+## Contributing
+
+Please read through our [contributing guidelines](https://github.com/twbs/bootstrap/blob/master/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
+
+Moreover, if your pull request contains JavaScript patches or features, you must include [relevant unit tests](https://github.com/twbs/bootstrap/tree/master/js/tests). All HTML and CSS should conform to the [Code Guide](https://github.com/mdo/code-guide), maintained by [Mark Otto](https://github.com/mdo).
+
+Editor preferences are available in the [editor config](https://github.com/twbs/bootstrap/blob/master/.editorconfig) for easy use in common text editors. Read more and download plugins at <http://editorconfig.org>.
+
+
+## Community
+
+Get updates on Bootstrap's development and chat with the project maintainers and community members.
+
+* Follow [@getbootstrap on Twitter](https://twitter.com/getbootstrap).
+* Read and subscribe to [The Official Bootstrap Blog](http://blog.getbootstrap.com).
+* Join [the official Slack room](https://bootstrap-slack.herokuapp.com).
+* Chat with fellow Bootstrappers in IRC. On the `irc.freenode.net` server, in the `##bootstrap` channel.
+* Implementation help may be found at Stack Overflow (tagged [`twitter-bootstrap-3`](https://stackoverflow.com/questions/tagged/twitter-bootstrap-3)).
+* Developers should use the keyword `bootstrap` on packages which modify or add to the functionality of Bootstrap when distributing through [npm](https://www.npmjs.com/browse/keyword/bootstrap) or similar delivery mechanisms for maximum discoverability.
+
+
+## Versioning
+
+For transparency into our release cycle and in striving to maintain backward compatibility, Bootstrap is maintained under [the Semantic Versioning guidelines](http://semver.org/). Sometimes we screw up, but we'll adhere to those rules whenever possible.
+
+See [the Releases section of our GitHub project](https://github.com/twbs/bootstrap/releases) for changelogs for each release version of Bootstrap. Release announcement posts on [the official Bootstrap blog](http://blog.getbootstrap.com) contain summaries of the most noteworthy changes made in each release.
+
+
+## Creators
+
+**Mark Otto**
+
+* <https://twitter.com/mdo>
+* <https://github.com/mdo>
+
+**Jacob Thornton**
+
+* <https://twitter.com/fat>
+* <https://github.com/fat>
+
+
+## Copyright and license
+
+Code and documentation copyright 2011-2015 Twitter, Inc. Code released under [the MIT license](https://github.com/twbs/bootstrap/blob/master/LICENSE). Docs released under [Creative Commons](https://github.com/twbs/bootstrap/blob/master/docs/LICENSE).
